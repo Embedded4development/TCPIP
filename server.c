@@ -23,11 +23,11 @@ void myfunction(int S)
 
 int main(int argc, char *argv[])
 {
-    int listenfd = 0, connfd = 0;
+    int listenfd = 0, connfd = 0,n=0;
     struct sockaddr_in serv_addr; 
 
-    char sendBuff[1025];
-    char ack[15];
+    char sendBuff[1024];
+    char ack[1024];
     time_t ticks; 
 
     listenfd = socket(AF_INET, SOCK_STREAM, 0);
@@ -54,16 +54,21 @@ int main(int argc, char *argv[])
        {
         snprintf(sendBuff, sizeof(sendBuff), "%s\r\n","connection established");
         write(connfd,sendBuff,strlen(sendBuff)); 
-
-      	 while(1)
-       	 {  
-            if(read(connfd,ack, strlen(ack)))
+   	       	   
+        while( (n = read(connfd, ack, sizeof(ack)-1)) > 0)
+         {
+            ack[n]=0;
+            	     
+   //        if(fputs(ack, stdout) == EOF)
             {
-      	      printf("%s\n",ack);
-              
+     //            printf("\n Error : Fputs error\n");
+    
              }
-        //     sleep(1);
-          }
+               printf("%s\n",ack);
+              
+         }
+        //    sleep(1);
+       }
       
         sigaction(SIGINT,&handler,NULL);
 
@@ -74,5 +79,4 @@ int main(int argc, char *argv[])
           }
        sleep(1);
       }
-    }
-}
+ }
