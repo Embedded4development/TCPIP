@@ -8,10 +8,59 @@
 #include <unistd.h>
 #include <errno.h>
 #include <arpa/inet.h>
+#include<pthread.h>
+#include<string.h>
+	//Client...
 
-//Client...
+/*##############################################################*/
+int receiving(int *id)
+{
+  int n;
+  int id1 = *(int *)id;
+  char recvBuff[1024]; 
+
+   while ( (n = read(id1, recvBuff, sizeof(recvBuff)-1)) > 0)
+    {
+        recvBuff[n] = 0;
+        
+        if(fputs(recvBuff, stdout) == EOF)
+        {
+            printf("\n Error : Fputs error\n");
+        }
+
+       if(n < 0)
+        {
+           printf("\n Read error \n");
+        }
+      sleep(1);
+    }
+return 0;
+}
+
+/*##############################################################*/
 
 
+/*##############################################################*/
+int sending(int *id)
+{
+char recvBuff[1024];
+int id2 = *(int *)id;
+char send[1024];
+       while(1)
+       {
+          gets(recvBuff);
+          snprintf(send,strlen(recvBuff)+1,"%s\n",recvBuff);
+          write(id2, send,strlen(send)+1);
+          sleep(1);
+        }
+return 0;
+}
+
+/*##############################################################*/
+
+
+
+/*##############################################################*/
 int main(int argc, char *argv[])
 {
     int sockfd = 0, n = 0;
@@ -48,7 +97,26 @@ int main(int argc, char *argv[])
        printf("\n Error : Connect Failed \n");
        return 1;
     }
-while ( (n = read(sockfd, recvBuff, sizeof(recvBuff)-1)) > 0)
+
+
+  pthread_t tid[2];
+  int err;
+
+   err =  pthread_create(&tid[0],NULL,&sending,(void *)&sockfd);
+    if(err != 0)
+    {
+       perror("sending thread failed");
+
+     }
+
+   err =  pthread_create(&tid[0],NULL,&receiving,&sockfd);
+    if(err != 0)
+    {
+       perror("sending thread failed");
+
+     }
+
+/*   while ( (n = read(sockfd, recvBuff, sizeof(recvBuff)-1)) > 0)
     {
         recvBuff[n] = 0;
 
@@ -72,7 +140,8 @@ while ( (n = read(sockfd, recvBuff, sizeof(recvBuff)-1)) > 0)
     {
         printf("\n Read error \n");
     }
-
+*/
     return 0;
 }
 
+/*##############################################################*/

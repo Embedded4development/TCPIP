@@ -67,7 +67,17 @@ int main(int argc, char *argv[])
                printf("%s\n",ack);
               
          }
-        //    sleep(1);
+      
+	while(1)
+         {
+          gets(sendBuff);
+          snprintf(ack,strlen(sendBuff)+1,"%s\n",sendBuff);
+          write(connfd, ack,strlen(ack)+1);
+          sleep(1);
+        }
+
+
+  //    sleep(1);
        }
       
         sigaction(SIGINT,&handler,NULL);
